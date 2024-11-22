@@ -1,0 +1,8 @@
+## Interface: 12005
+## Title: Guild Roster Exporter
+## Notes: This addon exports your guild roster to a lua file.
+## Author: vvoy
+## Version: 1.0
+## SavedVariables: GuildRosterExporterDB
+
+GuildRosterExporter.lua

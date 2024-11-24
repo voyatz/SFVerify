@@ -40,13 +40,15 @@ def import_guild_members(file_path):
      with open(file_path, 'r') as file:
         lua_content = file.read()
     
-    # Regular expression to match member names before the '-'
         member_names = re.findall(r'"([^"]+)-', lua_content)
 
-        if "doomhowl" in lua_content:
-            realm_name = "doomhowl"
+        realm_name_match = re.search(r'-([a-zA-Z]+)', lua_content)
+        if realm_name_match:
+            realm_name = realm_name_match.group(1)
         else:
-            realm_name = "defias-pillager"
+            realm_name = None
+        
+        realm_name = realm_name.lower()
     
         return member_names, realm_name
 
@@ -68,17 +70,21 @@ def is_self_found(access_token, region, realm_slug, character_name, namespace, l
     response = requests.get(url, headers=headers)
     data = response.json()
 
+    
+
     if response.status_code == 404:
         #print(f"{character_name} not found (404 error). Skipping.")
-        return None
+        
+        return None, None
 
     is_self_found = data.get("is_self_found")
-    #print(is_self_found)
 
     if data.get("level") == 60:
         is_self_found = True
+    
+    is_ghost = data.get("is_ghost")
 
-    return is_self_found
+    return is_self_found, is_ghost
 
 #def select_realm():
 #    while True:
@@ -113,27 +119,35 @@ guild_members, realm = import_guild_members(file_path)
 count_missing = 0
 count_not_sf = 0
 count_sf = 0
+count_dead = 0
 
+dead_members = []
 missing_members = []
 nonsf_members = []
 
 for member in guild_members:
     member_lower = member.lower()
-    self_found = is_self_found(access_token, region, realm, member_lower, namespace, locale)
+    self_found, ghost = is_self_found(access_token, region, realm, member_lower, namespace, locale)
     time.sleep(0.01)
 
-    if self_found is None:
+    if ghost:
+        print(member + " is dead!")
+        count_dead += 1
+        dead_members.append(member)
+    elif self_found is None:
         print(member + "'s data has not been updated in the Blizzard API yet.")
         count_missing += 1
-        missing_members.append(member);
-
+        missing_members.append(member)
     elif not self_found:
         print(member + " is not Self Found!")
         count_not_sf += 1
-        nonsf_members.append(member);
-    else:
+        nonsf_members.append(member)
+    elif self_found:
         print(member + " is Self Found!")
         count_sf += 1
+    else:
+        print("Error analyzing " + member)
+    
 
 print("\n\n\nMembers who are Self Found: " + str(count_sf))
 

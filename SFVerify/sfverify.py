@@ -37,7 +37,7 @@ def get_access_token(client_id, client_secret):
     return response.json().get("access_token")
 
 def import_guild_members(file_path):
-     with open(file_path, 'r') as file:
+     with open(file_path, 'r', encoding='utf-8') as file:
         lua_content = file.read()
     
         member_names = re.findall(r'"([^"]+)-', lua_content)
@@ -47,6 +47,8 @@ def import_guild_members(file_path):
             realm_name = realm_name_match.group(1)
         else:
             realm_name = None
+        
+        print("Running SFVerify on realm " + realm_name + "...")
         
         realm_name = realm_name.lower()
     
@@ -122,6 +124,8 @@ count_missing = 0
 count_not_sf = 0
 count_sf = 0
 count_dead = 0
+
+count = 0
 
 dead_members = []
 missing_members = []

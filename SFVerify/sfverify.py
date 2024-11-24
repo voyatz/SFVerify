@@ -128,7 +128,7 @@ missing_members = []
 nonsf_members = []
 
 for member in guild_members:
-    member_lower = member.lower()
+    member_lower = member[0].lower() + member[1:]
     self_found, ghost, status_code = is_self_found(access_token, region, realm, member_lower, namespace, locale)
     time.sleep(0.01)
 

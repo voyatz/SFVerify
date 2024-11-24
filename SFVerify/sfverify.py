@@ -153,11 +153,14 @@ for member in guild_members:
 
 print("\n\n\nMembers who are Self Found: " + str(count_sf))
 
-print("Members with missing API data: " + str(count_missing))
+print("\n\nMembers with missing API data: " + str(count_missing))
 print(missing_members)
 
-print("Members who are not Self Found: " + str(count_not_sf))
+print("\n\nMembers who are not Self Found: " + str(count_not_sf))
 print(nonsf_members)
+
+print("\n\nMembers who are dead: " + str(count_dead))
+print(dead_members)
     
 
 input("\nPress Enter to exit.")

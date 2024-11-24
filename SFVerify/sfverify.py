@@ -75,7 +75,7 @@ def is_self_found(access_token, region, realm_slug, character_name, namespace, l
     if response.status_code == 404:
         #print(f"{character_name} not found (404 error). Skipping.")
         
-        return None, None
+        return None, None, 404
 
     is_self_found = data.get("is_self_found")
 
@@ -84,7 +84,9 @@ def is_self_found(access_token, region, realm_slug, character_name, namespace, l
     
     is_ghost = data.get("is_ghost")
 
-    return is_self_found, is_ghost
+    status_code = response.status_code
+
+    return is_self_found, is_ghost, status_code
 
 #def select_realm():
 #    while True:
@@ -127,7 +129,7 @@ nonsf_members = []
 
 for member in guild_members:
     member_lower = member.lower()
-    self_found, ghost = is_self_found(access_token, region, realm, member_lower, namespace, locale)
+    self_found, ghost, status_code = is_self_found(access_token, region, realm, member_lower, namespace, locale)
     time.sleep(0.01)
 
     if ghost:
@@ -135,7 +137,7 @@ for member in guild_members:
         count_dead += 1
         dead_members.append(member)
     elif self_found is None:
-        print(member + "'s data has not been updated in the Blizzard API yet.")
+        print(member + "'s data not retrieved from Blizzard API. Status code: " + str(status_code))
         count_missing += 1
         missing_members.append(member)
     elif not self_found:
